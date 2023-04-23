@@ -34,6 +34,17 @@ public class Deck : MonoBehaviour
          * En principio, la posición de cada valor se deberá corresponder con la posición de faces. 
          * Por ejemplo, si en faces[1] hay un 2 de corazones, en values[1] debería haber un 2.
          */
+
+        for(int i = 0; i<52; i++)
+        {
+            values[i] = i;
+        }
+
+        // el atributo "faces" está asignado en el inspector en "GameController"
+        // el orden de los palos es (van de 13 en 13 (de 0 a 12)) corazones -> diamantes -> tréboles -> picas
+        // después hay otras imagenes extra que de momento no se para qué se usan
+
+
     }
 
     private void ShuffleCards()
