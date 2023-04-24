@@ -66,28 +66,36 @@ public class Deck : MonoBehaviour
 
     private void InitCardValues()
     {
-        //Asignar los valores de un palo
+        // Crear una lista de valores para un palo
         int[] valoresPalo = new int[13];
-        int valoresPaloIndex = 0;
-
+        int indiceValoresPalo = 0;
         valoresPalo[0] = 11;
-        for (int i = 1; i <= valoresPalo.Length - 1; i++)
+        for (int i = 1; i < valoresPalo.Length; i++)
         {
-            if (i < 10) valoresPalo[i] = i + 1;
-            else valoresPalo[i] = 10;
+            if (i < 10)
+            {
+                valoresPalo[i] = i + 1;
+            }
+            else
+            {
+                valoresPalo[i] = 10;
+            }
         }
 
-        //Asgnar un valor a los elementos de values
-        for (int i = 0; i <= values.Length - 1; i++)
+        // Asignar los valores a las cartas
+        for (int i = 0; i < values.Length; i++)
         {
-            values[i] = valoresPalo[valoresPaloIndex];
+            values[i] = valoresPalo[indiceValoresPalo];
 
-            valoresPaloIndex++;
-            if (valoresPaloIndex == 13) valoresPaloIndex = 0;
+            indiceValoresPalo++;
+            if (indiceValoresPalo == 13)
+            {
+                indiceValoresPalo = 0;
+            }
         }
 
-        //Baraja inicial como GameObject
-        for (int i = 0; i <= faces.Length - 1; i++)
+        // Generar una baraja inicial de objetos GameObject
+        for (int i = 0; i < faces.Length; i++)
         {
             GameObject carta = Instantiate(defaultCarta);
             carta.name = nombres[i];
@@ -143,7 +151,7 @@ public class Deck : MonoBehaviour
             if (dealer.GetComponent<CardHand>().points == 21 && player.GetComponent<CardHand>().points == 21)
             {
                 //Mensaje de empate
-                finalMessage.text = "Empate";
+                finalMessage.text = "¡Empate!";
                 finalMessage.color = Color.yellow;
 
                 //Desactivar botones
@@ -152,7 +160,7 @@ public class Deck : MonoBehaviour
 
                 //Mostrar puntuación dealer
                 pointDealer.enabled = true;
-                pointDealer.text = "Puntuación: " + dealer.GetComponent<CardHand>().points.ToString();
+                pointDealer.text = "Puntuación del dealer: " + dealer.GetComponent<CardHand>().points.ToString();
                 dealer.GetComponent<CardHand>().cards[0].GetComponent<CardModel>().ToggleFace(true);
 
                 //Apuesta
@@ -163,7 +171,7 @@ public class Deck : MonoBehaviour
             else if (player.GetComponent<CardHand>().points == 21 || dealer.GetComponent<CardHand>().points > 21)
             {
                 //Mensaje de victoria
-                finalMessage.text = "Has ganado";
+                finalMessage.text = "¡Ganaste!";
                 finalMessage.color = Color.green;
 
                 //Desactivar botones
@@ -172,7 +180,7 @@ public class Deck : MonoBehaviour
 
                 //Mostrar puntuación dealer
                 pointDealer.enabled = true;
-                pointDealer.text = "Puntuación: " + dealer.GetComponent<CardHand>().points.ToString();
+                pointDealer.text = "Puntuación del dealer: " + dealer.GetComponent<CardHand>().points.ToString();
                 dealer.GetComponent<CardHand>().cards[0].GetComponent<CardModel>().ToggleFace(true);
 
                 //Apuesta
@@ -183,7 +191,7 @@ public class Deck : MonoBehaviour
             else if (dealer.GetComponent<CardHand>().points == 21 || player.GetComponent<CardHand>().points > 21)
             {
                 //Mensaje de derrota
-                finalMessage.text = "Has perdido";
+                finalMessage.text = "¡Perdiste!";
                 finalMessage.color = Color.red;
 
                 //Desactivar botones
@@ -192,7 +200,7 @@ public class Deck : MonoBehaviour
 
                 //Mostrar puntuación dealer
                 pointDealer.enabled = true;
-                pointDealer.text = "Puntuación: " + dealer.GetComponent<CardHand>().points.ToString();
+                pointDealer.text = "Puntuación del dealer: " + dealer.GetComponent<CardHand>().points.ToString();
                 dealer.GetComponent<CardHand>().cards[0].GetComponent<CardModel>().ToggleFace(true);
 
                 //Apuesta
@@ -205,8 +213,7 @@ public class Deck : MonoBehaviour
 
     private void CalculateProbabilities()
     {
-
-        //PROBABILIDAD 1: Teniendo la carta oculta, probabilidad de que el dealer tenga más puntuación que el jugador
+        //PROBABILIDAD 1: Probabilidad de que el crupier tenga una puntuación más alta que el jugador con la carta oculta
 
         double cartasProb1 = 0;
         double Prob1 = 0;
@@ -220,9 +227,9 @@ public class Deck : MonoBehaviour
             }
         }
         Prob1 = (cartasProb1 / BarajaProbabilidades.Count) * 100;
-        probMessage.text = "El dealer tiene más puntuación: " + string.Format("{0:0.00}", Prob1) + "% \n";
+        probMessage.text = "El crupier tiene una puntuación más alta: " + string.Format("{0:0.00}", Prob1) + "% \n";
 
-        //PROBABILIDAD 2: Probabilidad de que el jugador obtenga entre un 17 y un 21 si pide una carta
+        //PROBABILIDAD 2: Probabilidad de que el jugador obtenga entre 17 y 21 si pide una carta
 
         double cartasProb2 = 0;
         double Prob2 = 0;
@@ -249,18 +256,21 @@ public class Deck : MonoBehaviour
             }
         }
         Prob3 = (cartasProb3 / BarajaProbabilidades.Count) * 100;
-        probMessage.text += "Obtener mas de 21: " + string.Format("{0:0.00}", Prob3) + "%";
+        probMessage.text += "Obtener más de 21: " + string.Format("{0:0.00}", Prob3) + "%";
     }
 
     //El dealer hacer el push con la baraja aleatoria
 
     void PushDealer()
     {
+        //Remover la carta de la baraja de probabilidades
         BarajaProbabilidades.Remove(BarajaAleatoria[cardIndex]);
 
+        //Dar la carta al dealer
         dealer.GetComponent<CardHand>().Push(BarajaAleatoria[cardIndex].GetComponent<CardModel>().front,
             BarajaAleatoria[cardIndex].GetComponent<CardModel>().value);
 
+        //Incrementar el índice de la carta
         cardIndex++;
     }
 
@@ -268,12 +278,16 @@ public class Deck : MonoBehaviour
 
     void PushPlayer()
     {
+        //Remover la carta de la baraja de probabilidades
         BarajaProbabilidades.Remove(BarajaAleatoria[cardIndex]);
 
+        //Dar la carta al player
         player.GetComponent<CardHand>().Push(BarajaAleatoria[cardIndex].GetComponent<CardModel>().front,
            BarajaAleatoria[cardIndex].GetComponent<CardModel>().value);
 
+        //Incrementar el índice de la carta
         cardIndex++;
+        //Calcular la probabilidad
         CalculateProbabilities();
     }
 
@@ -430,8 +444,6 @@ public class Deck : MonoBehaviour
 
     public void PlayAgain()
     {
-
-        
 
         //Reseteos
         finalMessage.text = "";
