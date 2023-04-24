@@ -66,7 +66,7 @@ public class Deck : MonoBehaviour
 
     private void InitCardValues()
     {
-        // Crear una lista de valores para un palo
+        //  Crear una lista de valores para un palo
         int[] valoresPalo = new int[13];
         int indiceValoresPalo = 0;
         valoresPalo[0] = 11;
